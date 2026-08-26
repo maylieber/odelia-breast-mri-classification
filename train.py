@@ -13,27 +13,18 @@ from sklearn.preprocessing import label_binarize
 from load_dataset import create_dataloaders
 from model import BreastMRINetwork
 
-# --------------------------------------------------
-# Device
-# --------------------------------------------------
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print("Using:", device)
 
 run_start_time = time.time()
 
-# --------------------------------------------------
-# Data
-# --------------------------------------------------
 
 train_loader, val_loader, test_loader, class_weights = create_dataloaders()
 
 class_weights = class_weights.to(device)
 
-# --------------------------------------------------
 # Overfit sanity check
-# --------------------------------------------------
 # Set to a small int (e.g. 8) to train/validate/test on the same
 # tiny subset of the train set, to confirm the pipeline can memorize
 # it. Set back to None for real training.
@@ -52,9 +43,8 @@ if OVERFIT_SUBSET_SIZE is not None:
     val_loader = DataLoader(overfit_subset, batch_size=OVERFIT_SUBSET_SIZE, shuffle=False)
     test_loader = DataLoader(overfit_subset, batch_size=OVERFIT_SUBSET_SIZE, shuffle=False)
 
-# --------------------------------------------------
+
 # Model
-# --------------------------------------------------
 
 model = BreastMRINetwork().to(device)
 
@@ -84,10 +74,6 @@ CHECKPOINT_PATH = f"checkpoints/best_model_{RUN_NAME}.pt"
 LOSS_CURVE_PATH = f"figures/loss_curve_{RUN_NAME}.png"
 CONFUSION_MATRIX_PATH = f"figures/confusion_matrix_{RUN_NAME}.png"
 ROC_CURVE_PATH = f"figures/roc_curve_{RUN_NAME}.png"
-
-# --------------------------------------------------
-# Epoch loop helper
-# --------------------------------------------------
 
 def run_epoch(loader, train):
 
@@ -135,9 +121,7 @@ def run_epoch(loader, train):
     return avg_loss, accuracy, all_labels, all_predictions, all_probabilities
 
 
-# --------------------------------------------------
 # Training
-# --------------------------------------------------
 
 train_loss_history = []
 val_loss_history = []
@@ -161,9 +145,8 @@ for epoch in range(1, NUM_EPOCHS + 1):
         torch.save(model.state_dict(), CHECKPOINT_PATH)
         print(f"Saved new best model (val loss {val_loss:.4f})")
 
-# --------------------------------------------------
+
 # Loss curve
-# --------------------------------------------------
 
 plt.figure(figsize=(8, 5))
 
@@ -179,9 +162,8 @@ plt.tight_layout()
 plt.savefig(LOSS_CURVE_PATH)
 plt.show()
 
-# --------------------------------------------------
+
 # Test evaluation (best checkpoint)
-# --------------------------------------------------
 
 model.load_state_dict(torch.load(CHECKPOINT_PATH))
 
@@ -189,9 +171,8 @@ test_loss, test_acc, test_labels, test_predictions, test_probabilities = run_epo
 
 print(f"Test loss: {test_loss:.4f} | Test accuracy: {test_acc:.4f}")
 
-# --------------------------------------------------
+
 # Precision / recall / confusion matrix
-# --------------------------------------------------
 
 CLASS_NAMES = ["No lesion", "Benign", "Malignant"]
 
@@ -216,9 +197,7 @@ plt.tight_layout()
 plt.savefig(CONFUSION_MATRIX_PATH)
 plt.show()
 
-# --------------------------------------------------
 # Sensitivity / specificity / AUC (one-vs-rest)
-# --------------------------------------------------
 
 test_probabilities = np.array(test_probabilities)
 test_labels_bin = label_binarize(test_labels, classes=[0, 1, 2])
@@ -246,9 +225,8 @@ print(f"\nMacro-average AUC:    {macro_auc:.4f}")
 print(f"Weighted-average AUC: {weighted_auc:.4f}")
 print(f"Micro-average AUC:    {micro_auc:.4f}")
 
-# --------------------------------------------------
+
 # ROC curve plot
-# --------------------------------------------------
 
 plt.figure(figsize=(7, 6))
 
@@ -270,9 +248,8 @@ plt.tight_layout()
 plt.savefig(ROC_CURVE_PATH)
 plt.show()
 
-# --------------------------------------------------
+
 # Run time
-# --------------------------------------------------
 
 elapsed_seconds = time.time() - run_start_time
 elapsed_minutes, elapsed_seconds = divmod(int(elapsed_seconds), 60)
