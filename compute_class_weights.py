@@ -5,19 +5,11 @@ import numpy as np
 
 def compute_weights(PROCESSED_MASTER_TABLE):
 
-    # ---------------------------------------
-    # Load processed dataframe
-    # ---------------------------------------
-
     df = pd.read_csv(PROCESSED_MASTER_TABLE)
 
     train_df = df[df["Split"] == "train"]
 
     labels = train_df["Lesion"].values
-
-    # ---------------------------------------
-    # Compute weights
-    # ---------------------------------------
 
     weights = compute_class_weight(
         class_weight="balanced",
