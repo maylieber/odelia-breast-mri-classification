@@ -195,15 +195,7 @@ def look_at_random_patient_slices(data_path):
 
 def all_t2_slices(table_path):
 
-    # ==========================================================
-    # Load master table
-    # ==========================================================
-
     master_df = pd.read_csv(table_path)
-
-    # ==========================================================
-    # Choose random patient
-    # ==========================================================
 
     row = master_df.sample(1).iloc[0]
 
@@ -214,17 +206,9 @@ def all_t2_slices(table_path):
     print(f"Institution  : {row['Institution']}")
     print(f"Lesion       : {row['Lesion']}")
 
-    # ==========================================================
-    # Load T2 volume
-    # ==========================================================
-
     t2 = nib.load(row["T2Path"]).get_fdata()
 
     print(f"Volume shape: {t2.shape}")
-
-    # ==========================================================
-    # Display all slices
-    # ==========================================================
 
     num_slices = t2.shape[2]
 
@@ -274,10 +258,6 @@ def show_patient(master_df, uid, dataset_root, slice_idx=None):
 
     dataset_root = Path(dataset_root)
 
-    # ------------------------------------------------------
-    # Find patient
-    # ------------------------------------------------------
-
     patient = master_df.loc[master_df["UID"] == uid]
 
     if len(patient) == 0:
@@ -287,19 +267,11 @@ def show_patient(master_df, uid, dataset_root, slice_idx=None):
 
     institution = patient["Institution"]
 
-    # ------------------------------------------------------
-    # Build paths
-    # ------------------------------------------------------
-
     patient_folder = dataset_root / institution / uid
 
     t2_path = patient_folder / "T2.nii.gz"
     pre_path = patient_folder / "Pre.nii.gz"
     post1_path = patient_folder / "Post1.nii.gz"
-
-    # ------------------------------------------------------
-    # Load images
-    # ------------------------------------------------------
 
     t2 = nib.load(t2_path).get_fdata()
 
@@ -307,16 +279,8 @@ def show_patient(master_df, uid, dataset_root, slice_idx=None):
 
     post1 = nib.load(post1_path).get_fdata()
 
-    # ------------------------------------------------------
-    # Choose slice
-    # ------------------------------------------------------
-
     if slice_idx is None:
         slice_idx = random.randint(0, t2.shape[2] - 1)
-
-    # ------------------------------------------------------
-    # Plot
-    # ------------------------------------------------------
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
