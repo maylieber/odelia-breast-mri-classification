@@ -16,22 +16,10 @@ from dataset import ODELIADataset
 from compute_class_weights import compute_weights
 from augmentations import train_augmentations
 
-# ==========================================================
-# USER SETTINGS
-# ==========================================================
-
 # Root directory of the processed images
 PROCESSED_ROOT = Path(r"D:\ODELIA_processed")
 
-# Processed master table (anchored to this file's location, not the
-# working directory, so callers importing this module or its
-# PROCESSED_MASTER_TABLE from elsewhere -- e.g. experiments/scripts/ --
-# still resolve it correctly)
 PROCESSED_MASTER_TABLE = Path(__file__).resolve().parent / "processed_master_dataset.csv"
-
-# ==========================================================
-# Training parameters
-# ==========================================================
 
 BATCH_SIZE = 16
 
