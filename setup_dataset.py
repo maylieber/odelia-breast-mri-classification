@@ -16,9 +16,7 @@ from pathlib import Path
 from master_table import create_master_table
 from preprocessing import preprocess_dataset
 
-# ==========================================================
 # USER SETTINGS
-# ==========================================================
 # Original dataset folder path
 ORIGINAL_DATASET = Path(r"D:\ODELIA")
 # Processed dataset folder path
@@ -28,9 +26,7 @@ MASTER_TABLE = Path(r"master_dataset.csv")
 # Processed master table output path
 PROCESSED_MASTER_TABLE = Path(r"processed_master_dataset.csv")
 
-# ==========================================================
 # PREPROCESSING PARAMETERS
-# ==========================================================
 
 OUTPUT_SIZE = (128, 128, 32)
 
@@ -38,9 +34,7 @@ ROI_PERCENTILE = 60
 
 ROI_MARGIN = 5
 
-# ==========================================================
 # Create master table
-# ==========================================================
 
 print("=" * 60)
 print("STEP 1 / 2")
@@ -51,9 +45,7 @@ create_master_table(ORIGINAL_DATASET, MASTER_TABLE)
 
 print()
 
-# ==========================================================
 # Preprocess dataset
-# ==========================================================
 
 print("=" * 60)
 print("STEP 2 / 2")
@@ -74,9 +66,8 @@ print("=" * 60)
 print("Dataset setup completed successfully.")
 print("=" * 60)
 
-# --------------------------------------------------
+
 # Optional visual sanity checks (uncomment the call to run one manually)
-# --------------------------------------------------
 
 from visualization import plot_class_distribution
 # plot_class_distribution(PROCESSED_MASTER_TABLE)               # class balance per split
