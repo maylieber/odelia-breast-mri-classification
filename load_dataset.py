@@ -3,8 +3,6 @@ load_dataset.py
 
 Utility for loading the processed ODELIA dataset.
 
-Student B only needs to modify the two paths below.
-
 Returns:
     train_loader
     validation_loader
