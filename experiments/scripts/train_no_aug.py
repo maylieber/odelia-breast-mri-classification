@@ -35,19 +35,11 @@ from compute_class_weights import compute_weights
 from load_dataset import PROCESSED_ROOT, PROCESSED_MASTER_TABLE, BATCH_SIZE, NUM_WORKERS, PIN_MEMORY
 from model import BreastMRINetwork
 
-# --------------------------------------------------
-# Device
-# --------------------------------------------------
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 print("Using:", device)
 
 run_start_time = time.time()
-
-# --------------------------------------------------
-# Data (reference configuration's split, no augmentation)
-# --------------------------------------------------
 
 df = pd.read_csv(PROCESSED_MASTER_TABLE)
 
@@ -86,9 +78,7 @@ test_loader = DataLoader(
 class_weights = compute_weights(PROCESSED_MASTER_TABLE)
 class_weights = class_weights.to(device)
 
-# --------------------------------------------------
 # Model
-# --------------------------------------------------
 
 model = BreastMRINetwork().to(device)
 
@@ -115,10 +105,6 @@ CHECKPOINT_PATH = str(CHECKPOINTS_DIR / f"best_model_{RUN_NAME}.pt")
 LOSS_CURVE_PATH = str(FIGURES_DIR / f"loss_curve_{RUN_NAME}.png")
 CONFUSION_MATRIX_PATH = str(FIGURES_DIR / f"confusion_matrix_{RUN_NAME}.png")
 ROC_CURVE_PATH = str(FIGURES_DIR / f"roc_curve_{RUN_NAME}.png")
-
-# --------------------------------------------------
-# Epoch loop helper
-# --------------------------------------------------
 
 def run_epoch(loader, train):
 
@@ -165,10 +151,7 @@ def run_epoch(loader, train):
 
     return avg_loss, accuracy, all_labels, all_predictions, all_probabilities
 
-
-# --------------------------------------------------
 # Training
-# --------------------------------------------------
 
 train_loss_history = []
 val_loss_history = []
@@ -192,9 +175,8 @@ for epoch in range(1, NUM_EPOCHS + 1):
         torch.save(model.state_dict(), CHECKPOINT_PATH)
         print(f"Saved new best model (val loss {val_loss:.4f})")
 
-# --------------------------------------------------
+
 # Loss curve
-# --------------------------------------------------
 
 plt.figure(figsize=(8, 5))
 
@@ -210,9 +192,7 @@ plt.tight_layout()
 plt.savefig(LOSS_CURVE_PATH)
 plt.show()
 
-# --------------------------------------------------
 # Test evaluation (best checkpoint)
-# --------------------------------------------------
 
 model.load_state_dict(torch.load(CHECKPOINT_PATH))
 
@@ -220,9 +200,7 @@ test_loss, test_acc, test_labels, test_predictions, test_probabilities = run_epo
 
 print(f"Test loss: {test_loss:.4f} | Test accuracy: {test_acc:.4f}")
 
-# --------------------------------------------------
 # Precision / recall / confusion matrix
-# --------------------------------------------------
 
 CLASS_NAMES = ["No lesion", "Benign", "Malignant"]
 
@@ -247,9 +225,7 @@ plt.tight_layout()
 plt.savefig(CONFUSION_MATRIX_PATH)
 plt.show()
 
-# --------------------------------------------------
 # Sensitivity / specificity / AUC (one-vs-rest)
-# --------------------------------------------------
 
 test_probabilities = np.array(test_probabilities)
 test_labels_bin = label_binarize(test_labels, classes=[0, 1, 2])
@@ -275,9 +251,7 @@ weighted_auc = roc_auc_score(test_labels_bin, test_probabilities, average="weigh
 print(f"\nMacro-average AUC:    {macro_auc:.4f}")
 print(f"Weighted-average AUC: {weighted_auc:.4f}")
 
-# --------------------------------------------------
 # ROC curve plot
-# --------------------------------------------------
 
 plt.figure(figsize=(7, 6))
 
@@ -299,9 +273,7 @@ plt.tight_layout()
 plt.savefig(ROC_CURVE_PATH)
 plt.show()
 
-# --------------------------------------------------
 # Run time
-# --------------------------------------------------
 
 elapsed_seconds = time.time() - run_start_time
 elapsed_minutes, elapsed_seconds = divmod(int(elapsed_seconds), 60)
