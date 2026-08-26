@@ -48,24 +48,11 @@ def process_patient(
     """
 
     output_root = Path(output_root)
-
-    # ======================================================
-    # Patient information
-    # ======================================================
-
     uid = row["UID"]
     institution = row["Institution"]
 
-    # ======================================================
-    # Output folder
-    # ======================================================
-
     patient_folder = output_root / institution / uid
     patient_folder.mkdir(parents=True, exist_ok=True)
-
-    # ======================================================
-    # Load images
-    # ======================================================
 
     t2 = nib.load(row["T2Path"]).get_fdata()
 
@@ -73,20 +60,11 @@ def process_patient(
 
     post1 = nib.load(row["Post1Path"]).get_fdata()
 
-
-    # ======================================================
-    # Compute ROI
-    # ======================================================
-
     xmin, xmax, ymin, ymax = compute_roi(
         t2,
         percentile=percentile,
         margin=margin
     )
-
-    # ======================================================
-    # Crop
-    # ======================================================
 
     t2 = t2[xmin:xmax + 1,
             ymin:ymax + 1,
@@ -100,10 +78,6 @@ def process_patient(
                   ymin:ymax + 1,
                   :]
 
-    # ======================================================
-    # Resize helper
-    # ======================================================
-
     def resize_volume(volume):
 
         image = tio.ScalarImage(
@@ -116,19 +90,11 @@ def process_patient(
 
         return image
 
-    # ======================================================
-    # Resize
-    # ======================================================
-
     t2 = resize_volume(t2)
 
     pre = resize_volume(pre)
 
     post1 = resize_volume(post1)
-
-    # ======================================================
-    # Save
-    # ======================================================
 
     t2.save(patient_folder / "T2.nii.gz")
 
