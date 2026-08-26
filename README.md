@@ -78,14 +78,15 @@ already ROI-cropped and resized to 128x128x32 by `preprocessing.py`):
 python inference.py --patient_dir path/to/patient_folder
 ```
 
-## References
-
-[1] G. Müller-Franzes et al., “A European Multi-Center Breast Cancer MRI Dataset,” May 2025, Accessed: Aug. 16, 2026. [Online]. Available: https://arxiv.org/pdf/2506.00474
-
-
 Reproduce the reported test-set metrics on the full processed test split — per-class
 sensitivity/specificity/AUC plus macro-, weighted-, and micro-average AUC:
 
 ```
 python inference.py --test_set
 ```
+
+## References
+
+[1] G. Müller-Franzes et al., “A European Multi-Center Breast Cancer MRI Dataset,” May 2025, Accessed: Aug. 16, 2026. [Online]. Available: https://arxiv.org/pdf/2506.00474
+
+
