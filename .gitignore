@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+# Internal-only experiment log/notes -- not part of the submission
+PROGRESS.md
+METHODS_AND_EXPERIMENTS.md
+IMPROVEMENT_IDEAS.md
+
+# Archived experiment checkpoints (large; only the main deliverable
+# checkpoint, checkpoints/best_model_run.pt, is tracked)
+experiments/checkpoints/*.pt
