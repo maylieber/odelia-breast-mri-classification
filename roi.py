@@ -13,19 +13,11 @@ def initial_ROI_cropping_for_random(table_path):
     the crop parameters.
     """
 
-    # ==========================================================
-    # Settings
-    # ==========================================================
-
     MIDDLE_START = 8
-    MIDDLE_END = 24          # Python slice -> slices 8...23
+    MIDDLE_END = 24          
 
     THRESHOLD_PERCENTILE = 60 # Tunable hyperparameter
     MARGIN = 5
-
-    # ==========================================================
-    # Load master table
-    # ==========================================================
 
     master_df = pd.read_csv(table_path)
 
@@ -39,10 +31,6 @@ def initial_ROI_cropping_for_random(table_path):
     print(f"Lesion       : {row['Lesion']}")
     print()
 
-    # ==========================================================
-    # Load MRI volumes
-    # ==========================================================
-
     t2 = nib.load(row["T2Path"]).get_fdata()
 
     pre = nib.load(row["PrePath"]).get_fdata()
@@ -51,17 +39,9 @@ def initial_ROI_cropping_for_random(table_path):
 
     print("Original shape:", t2.shape)
 
-    # ==========================================================
-    # Compute MIP from middle 16 slices
-    # ==========================================================
-
     middle_volume = t2[:, :, MIDDLE_START:MIDDLE_END]
 
     mip = np.max(middle_volume, axis=2)
-
-    # ==========================================================
-    # Threshold MIP
-    # ==========================================================
 
     foreground = mip[mip > 0]
 
@@ -71,10 +51,6 @@ def initial_ROI_cropping_for_random(table_path):
 
     print(f"Threshold = {threshold:.2f}")
 
-    # ==========================================================
-    # Compute 2D bounding box
-    # ==========================================================
-
     coords = np.argwhere(mask)
 
     xmin = coords[:, 0].min()
@@ -82,10 +58,6 @@ def initial_ROI_cropping_for_random(table_path):
 
     ymin = coords[:, 1].min()
     ymax = coords[:, 1].max()
-
-    # ==========================================================
-    # Add margin
-    # ==========================================================
 
     xmin = max(0, xmin - MARGIN)
     xmax = min(t2.shape[0] - 1, xmax + MARGIN)
@@ -98,10 +70,6 @@ def initial_ROI_cropping_for_random(table_path):
     print(f"x : {xmin} -> {xmax}")
     print(f"y : {ymin} -> {ymax}")
 
-    # ==========================================================
-    # Crop all modalities
-    # ==========================================================
-
     t2_crop = t2[xmin:xmax + 1, ymin:ymax + 1, :]
 
     pre_crop = pre[xmin:xmax + 1, ymin:ymax + 1, :]
@@ -110,17 +78,11 @@ def initial_ROI_cropping_for_random(table_path):
 
     print("Cropped shape:", t2_crop.shape)
 
-    # ==========================================================
-    # Display one random slice
-    # ==========================================================
-
     slice_idx = random.randint(0, t2.shape[2] - 1)
 
     print(f"Displaying slice {slice_idx}")
 
-    # ==========================================================
     # Plot
-    # ==========================================================
 
     fig, axes = plt.subplots(2, 3, figsize=(15, 10))
 
@@ -210,21 +172,10 @@ def compute_roi(
         Bounding box coordinates.
     """
 
-    # ------------------------------------------------------
-    # Middle slices
-    # ------------------------------------------------------
 
     middle_volume = t2[:, :, middle_start:middle_end]
 
-    # ------------------------------------------------------
-    # Maximum Intensity Projection
-    # ------------------------------------------------------
-
     mip = np.max(middle_volume, axis=2)
-
-    # ------------------------------------------------------
-    # Threshold
-    # ------------------------------------------------------
 
     foreground = mip[mip > 0]
 
@@ -234,10 +185,6 @@ def compute_roi(
     threshold = np.percentile(foreground, percentile)
 
     mask = mip > threshold
-
-    # ------------------------------------------------------
-    # Bounding box
-    # ------------------------------------------------------
 
     coords = np.argwhere(mask)
 
@@ -249,10 +196,6 @@ def compute_roi(
 
     ymin = coords[:, 1].min()
     ymax = coords[:, 1].max()
-
-    # ------------------------------------------------------
-    # Margin
-    # ------------------------------------------------------
 
     xmin = max(0, xmin - margin)
     xmax = min(t2.shape[0] - 1, xmax + margin)
